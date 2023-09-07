@@ -5,7 +5,6 @@ export const createUser = async (req: Request, res: Response) => {
   try {
     const { firstname, lastname } = req.body;
 
-    throw new Error("my error !!");
     const user = new User();
     user.firstname = firstname;
     user.lastname = lastname;
@@ -38,6 +37,24 @@ export const updateUser = async (req: Request, res: Response) => {
     if (!user) return res.status(404).json({ message: "User does not exists" });
 
     User.update({ id: parseInt(id) }, req.body);
+
+    return res.sendStatus(204);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const result = await User.delete({ id: parseInt(id) });
+
+    if (result.affected === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     return res.sendStatus(204);
   } catch (error) {
